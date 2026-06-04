@@ -1,0 +1,13 @@
+# cargo-release configuration.
+#
+# Distribution is handled by cargo-dist (GitHub Releases, Homebrew, MSI), not
+# crates.io — so we don't publish here. cargo-release's only job is to keep the
+# git tag in lockstep with the Cargo.toml version and push, so cargo-dist's
+# release workflow fires. This removes the chance of a tag/version mismatch.
+publish = false
+tag = true
+tag-name = "v{{version}}"
+push = true
+allow-branch = ["main", "master"]
+pre-release-commit-message = "Release {{version}}"
+tag-message = "Release {{version}}"
