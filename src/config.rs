@@ -3,15 +3,16 @@ use std::path::PathBuf;
 use anyhow::{Context, Result};
 use serde::{Deserialize, Serialize};
 
-/// User configuration, loaded from `~/.config/pelper/config.toml`
-/// (or `$XDG_CONFIG_HOME/pelper/config.toml`). A starter file is written
-/// on first run so it is easy to discover and edit.
+/// User configuration, read from `~/.config/pelper/config.toml`
+/// (or `$XDG_CONFIG_HOME/pelper/config.toml`) when present. Config is optional:
+/// with no file, pelper scans the current working directory.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
     /// Directories whose immediate git subdirectories are treated as projects.
-    #[serde(default = "default_roots")]
+    /// When empty, the current working directory is scanned.
+    #[serde(default)]
     pub roots: Vec<PathBuf>,
-    /// Branch names treated as the project's "main" branch, in priority order.
+    /// Branch names treated as a project's "main", in priority order.
     #[serde(default = "default_branches")]
     pub default_branches: Vec<String>,
 }
@@ -19,7 +20,7 @@ pub struct Config {
 impl Default for Config {
     fn default() -> Self {
         Self {
-            roots: default_roots(),
+            roots: Vec::new(),
             default_branches: default_branches(),
         }
     }
@@ -33,20 +34,14 @@ impl Config {
                 .with_context(|| format!("reading config at {}", path.display()))?;
             toml::from_str(&text).with_context(|| format!("parsing config at {}", path.display()))?
         } else {
-            let cfg = Config::default();
-            let _ = cfg.write_to(&path); // best-effort starter file
-            cfg
+            Config::default()
         };
         cfg.roots = cfg.roots.into_iter().map(expand_tilde).collect();
-        Ok(cfg)
-    }
-
-    fn write_to(&self, path: &PathBuf) -> Result<()> {
-        if let Some(parent) = path.parent() {
-            std::fs::create_dir_all(parent)?;
+        // No roots configured ⇒ scan wherever pelper was launched from.
+        if cfg.roots.is_empty() {
+            cfg.roots = vec![current_dir()];
         }
-        std::fs::write(path, toml::to_string_pretty(self)?)?;
-        Ok(())
+        Ok(cfg)
     }
 }
 
@@ -56,16 +51,16 @@ fn home() -> PathBuf {
         .unwrap_or_else(|| PathBuf::from("."))
 }
 
+fn current_dir() -> PathBuf {
+    std::env::current_dir().unwrap_or_else(|_| PathBuf::from("."))
+}
+
 fn config_path() -> PathBuf {
     if let Some(xdg) = std::env::var_os("XDG_CONFIG_HOME") {
         PathBuf::from(xdg).join("pelper").join("config.toml")
     } else {
         home().join(".config").join("pelper").join("config.toml")
     }
-}
-
-fn default_roots() -> Vec<PathBuf> {
-    vec![home().join("coding")]
 }
 
 fn default_branches() -> Vec<String> {

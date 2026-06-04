@@ -119,7 +119,7 @@ pub fn draw(f: &mut Frame, app: &mut App) {
             .join(", ");
         super::empty_state(
             f,
-            &format!("No git projects under {roots} — edit ~/.config/pelper/config.toml"),
+            &format!("No git projects in {roots} — run pelper where your repos live"),
             Color::DarkGray,
             chunks[1],
         );

@@ -74,7 +74,14 @@ pub fn draw(f: &mut Frame, app: &mut App) {
             Style::default().fg(Color::DarkGray),
         ),
     ]);
-    f.render_widget(Paragraph::new(vec![Line::from(""), title]), chunks[0]);
+    let mut header = vec![Line::from(""), title];
+    if let Some(version) = &app.update_available {
+        header.push(Line::from(Span::styled(
+            format!("  ↑ update available: {version} — run pelper-update"),
+            Style::default().fg(Color::Yellow),
+        )));
+    }
+    f.render_widget(Paragraph::new(header), chunks[0]);
 
     let items: Vec<ListItem> = features()
         .iter()

@@ -8,7 +8,9 @@ cargo-dist-version = "0.32.0"
 # CI backends to support
 ci = "github"
 # The installers to generate for each app
-installers = ["shell", "homebrew", "msi"]
+installers = ["shell", "powershell", "homebrew", "msi"]
+# Ship a self-updater (`pelper-update`) with the installers
+install-updater = true
 # Publish the generated Homebrew formula to this tap repo
 tap = "phibersoft/homebrew-tap"
 # Publish jobs to run in CI

@@ -1,4 +1,5 @@
 use std::path::PathBuf;
+use std::sync::mpsc::{Receiver, TryRecvError};
 use std::time::Duration;
 
 use anyhow::Result;
@@ -6,6 +7,7 @@ use ratatui::crossterm::event::{self, Event, KeyCode, KeyEvent, KeyEventKind, Ke
 use ratatui::{DefaultTerminal, Frame};
 
 use crate::config::Config;
+use crate::update_check;
 
 use super::prune::PrunePhase;
 use super::{detail, help, home, projects, prune, update};
@@ -32,6 +34,8 @@ pub struct App {
     pub update: Option<update::UpdateState>,
     pub prune: Option<prune::PruneState>,
     pub show_help: bool,
+    pub update_available: Option<String>,
+    update_rx: Option<Receiver<Option<String>>>,
 }
 
 impl App {
@@ -47,6 +51,8 @@ impl App {
             update: None,
             prune: None,
             show_help: false,
+            update_available: None,
+            update_rx: Some(update_check::spawn_check()),
         }
     }
 
@@ -321,6 +327,13 @@ impl App {
         }
         if let Some(p) = self.prune.as_mut() {
             p.drain();
+        }
+        if let Some(rx) = self.update_rx.take() {
+            match rx.try_recv() {
+                Ok(result) => self.update_available = result,
+                Err(TryRecvError::Empty) => self.update_rx = Some(rx),
+                Err(TryRecvError::Disconnected) => {}
+            }
         }
     }
 

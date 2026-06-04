@@ -46,6 +46,10 @@ cargo build --release
 cargo install --path .
 ```
 
+Installed via the release installers, `pelper-update` self-updates to the latest
+release (Homebrew: `brew upgrade`). pelper also shows an "update available" hint
+on its home screen when a newer version exists.
+
 ## Usage
 
 Run with no arguments for the interactive TUI:
@@ -81,11 +85,14 @@ Press `?` on any screen for a context-specific overlay.
 
 ## Configuration
 
-On first run pelper writes a starter config to
+By default pelper scans the **current directory** for git projects — just run
+it wherever your repos live. To pin specific roots instead, create
 `~/.config/pelper/config.toml` (or `$XDG_CONFIG_HOME/pelper/config.toml`):
 
 ```toml
-roots = ["~/coding"]               # directories whose git subdirs are projects
+# Directories whose immediate git subdirectories are projects.
+# Omit or leave empty to scan the current working directory.
+roots = ["~/coding", "~/work"]
 default_branches = ["main", "master"]  # treated as a project's "main", in priority order
 ```
 

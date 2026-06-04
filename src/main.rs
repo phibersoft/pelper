@@ -6,6 +6,7 @@ mod cli;
 mod config;
 mod git;
 mod tui;
+mod update_check;
 
 use anyhow::Result;
 use clap::{Parser, Subcommand};
