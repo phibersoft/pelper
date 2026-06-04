@@ -40,7 +40,7 @@ impl ProjectsState {
         self.projects.clear();
         self.table.select(None);
         self.scanning = true;
-        self.rx = Some(git::spawn_scan(cfg.roots.clone()));
+        self.rx = Some(git::spawn_scan(cfg.roots.clone(), cfg.scan_ignore.clone()));
     }
 
     /// Pull any results that have streamed in since the last tick.

@@ -8,7 +8,7 @@ use crate::git::{self, time::relative, PruneScanMsg, UpdateMsg, UpdateStatus};
 /// Resolve discovered projects to `(name, path)` targets, optionally filtered
 /// to a single project by name.
 fn resolve_targets(cfg: &Config, project: Option<String>) -> Result<Vec<(String, PathBuf)>> {
-    let mut targets: Vec<(String, PathBuf)> = git::scan_blocking(&cfg.roots)
+    let mut targets: Vec<(String, PathBuf)> = git::scan_blocking(&cfg.roots, &cfg.scan_ignore)
         .into_iter()
         .map(|p| (p.name, p.path))
         .collect();
@@ -23,7 +23,7 @@ fn resolve_targets(cfg: &Config, project: Option<String>) -> Result<Vec<(String,
 
 /// `pelper scan` — list discovered projects as a plain table.
 pub fn run_scan(cfg: &Config) -> Result<()> {
-    let projects = git::scan_blocking(&cfg.roots);
+    let projects = git::scan_blocking(&cfg.roots, &cfg.scan_ignore);
     if projects.is_empty() {
         println!("No git projects found under:");
         for root in &cfg.roots {

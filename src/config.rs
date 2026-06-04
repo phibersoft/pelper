@@ -8,13 +8,17 @@ use serde::{Deserialize, Serialize};
 /// with no file, pelper scans the current working directory.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Config {
-    /// Directories whose immediate git subdirectories are treated as projects.
+    /// Directories scanned (recursively) for git repositories.
     /// When empty, the current working directory is scanned.
     #[serde(default)]
     pub roots: Vec<PathBuf>,
     /// Branch names treated as a project's "main", in priority order.
     #[serde(default = "default_branches")]
     pub default_branches: Vec<String>,
+    /// Directory names the recursive scan never descends into. Hidden
+    /// directories (starting with `.`) are always skipped.
+    #[serde(default = "default_ignore")]
+    pub scan_ignore: Vec<String>,
 }
 
 impl Default for Config {
@@ -22,6 +26,7 @@ impl Default for Config {
         Self {
             roots: Vec::new(),
             default_branches: default_branches(),
+            scan_ignore: default_ignore(),
         }
     }
 }
@@ -65,6 +70,23 @@ fn config_path() -> PathBuf {
 
 fn default_branches() -> Vec<String> {
     vec!["main".into(), "master".into()]
+}
+
+fn default_ignore() -> Vec<String> {
+    [
+        "node_modules",
+        "target",
+        "dist",
+        "build",
+        "vendor",
+        "venv",
+        "__pycache__",
+        "Pods",
+        "DerivedData",
+    ]
+    .iter()
+    .map(|s| s.to_string())
+    .collect()
 }
 
 fn expand_tilde(p: PathBuf) -> PathBuf {
