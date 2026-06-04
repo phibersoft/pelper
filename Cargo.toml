@@ -1,0 +1,24 @@
+[package]
+name = "pelper"
+version = "0.1.0"
+edition = "2021"
+description = "A terminal DX helper that brings your everyday dev tools into one TUI"
+license = "MIT"
+readme = "README.md"
+repository = "https://github.com/phibersoft/pelper"
+homepage = "https://github.com/phibersoft/pelper"
+keywords = ["tui", "git", "cli", "developer-tools", "productivity"]
+categories = ["command-line-utilities", "development-tools"]
+
+[dependencies]
+ratatui = "0.29"
+serde = { version = "1", features = ["derive"] }
+toml = "0.8"
+directories = "5"
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+
+# The profile that 'dist' will build with
+[profile.dist]
+inherits = "release"
+lto = "thin"
