@@ -2,6 +2,7 @@
 name = "pelper"
 version = "0.1.0"
 edition = "2021"
+authors = ["phibersoft"]
 description = "A terminal DX helper that brings your everyday dev tools into one TUI"
 license = "MIT"
 readme = "README.md"
@@ -9,6 +10,12 @@ repository = "https://github.com/phibersoft/pelper"
 homepage = "https://github.com/phibersoft/pelper"
 keywords = ["tui", "git", "cli", "developer-tools", "productivity"]
 categories = ["command-line-utilities", "development-tools"]
+
+[package.metadata.wix]
+upgrade-guid = "449D08AE-BE92-45F3-BBB6-35075F809E19"
+path-guid = "DD54DCC6-E959-4DC2-9BB1-4CEE77BAF5C4"
+license = false
+eula = false
 
 [dependencies]
 ratatui = "0.29"
