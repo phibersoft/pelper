@@ -1,6 +1,6 @@
 [package]
 name = "pelper"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["phibersoft"]
 description = "A terminal DX helper that brings your everyday dev tools into one TUI"
